@@ -5,7 +5,7 @@
             {{ error }}
         </div>
         <div v-if="posts.length">
-            <PostList v-if="showPost" :posts="posts"/>
+            <PostList :posts="posts"/>
         </div>
         <div v-else>Loading...</div>
         <!-- <button @click="showPost = !showPost">Toggle Post</button>
@@ -15,36 +15,16 @@
 
 <script>
 import PostList from '../components/PostList.vue'
-import { ref } from '@vue/reactivity'
+import getPosts from '../composables/getPost'
 export default {
     name: 'Home3',
     components: { PostList },
     setup() {
-        const posts = ref([])
-        const error = ref(null)
-
-        const load = async () => {
-            try {
-                let data = await fetch('http://localhost:3000/posts')
-                if(!data.ok) {
-                    throw Error('Something went wrong, no data available')
-                }
-
-                posts.value = await data.json()
-            }
-            catch(err) {
-                error.value = err.message
-                console.log(err.message)
-                console.log(error.value)
-            }
-        }
+        const { posts, error, load } = getPosts()
 
         load()
 
-        const showPost = ref(true)
-
-
-        return { posts, showPost, error }
+        return { posts, error }
     },
 }
 </script>
